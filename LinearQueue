@@ -1,0 +1,131 @@
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct  queue
+{
+    int capacity;
+    int rear;
+    int front;
+    int *item;
+}Q;
+Q *create_queue(int size);
+int isFull(Q *q);
+void enqueue(Q *q,int value);
+void dequeue(Q *q);
+void peek(Q *q);
+void freeQueue(Q *q);
+void printf_fun(Q *q);
+int main()
+{
+    int size;
+    int value;
+    int option;
+    printf("Enter the size: ");
+    scanf("%d",&size);
+    Q *q=create_queue(size);
+    while (1) 
+    {
+        printf("\n1. Enqueue\n2. Dequeue\n3. Peek\n4. print\n5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &option);
+
+        switch(option) {
+            case 1:
+                printf("Enter the value for enqueue: ");
+                scanf("%d", &value);
+                enqueue(q, value);
+                break;
+
+            case 2:
+                dequeue(q);
+                break;
+
+            case 3:
+                peek(q);
+                break;
+            
+             case 4:
+                printf_fun(q);
+                break;
+            
+            case 5:
+                printf("Exiting...\n");
+                freeQueue(q);  // Free allocated memory
+                exit(0);  // Exit the program
+
+            default:
+                printf("Invalid option! Please try again.\n");
+        }
+    }
+}
+Q *create_queue(int size)
+{
+   Q *q=malloc(sizeof(Q));
+   if(q==NULL)
+   {
+     perror("Memory allocation Failed");
+     exit(1);
+   }
+   q->item=(int *)malloc(size*sizeof(int));
+   if(q->item==NULL)
+   {
+     perror("Memory allocation Failed");
+     exit(1);
+   }
+   q->rear=-1;
+   q->front=0;
+   q->capacity=size;
+   return q;
+}
+int isFull(Q *q)
+{
+   return q->rear==q->capacity-1;
+}
+int isEmpyt(Q *q)
+{
+    return q->rear<q->front;
+}
+void enqueue(Q *q,int value)
+{
+    if(isFull(q))
+    {
+        printf("Queue is Full Cannot add the value %d",value);
+        return;
+    }
+    q->rear++;
+    q->item[q->rear]=value;
+}
+void dequeue(Q *q)
+{
+    if(isEmpyt(q))
+    {
+        printf("Queue is Empyt");
+        return;
+    }
+    int value=q->item[q->front++];
+    printf("dequeue value is: %d",value);
+    
+}
+void peek(Q *q)
+{
+    if(isEmpyt(q))
+    {
+        printf("Queue is empty");
+        return;
+    }
+    int value=q->item[q->front];
+    printf("Peek element is %d",value);
+}
+void printf_fun(Q *q)
+{
+    for(int i=q->front;i<=q->rear;i++)
+    {
+      printf("Queue value are %d\n",q->item[i]);
+    }
+}
+void freeQueue(Q *q)
+{
+   free(q->item);
+   free(q);
+}
+
+

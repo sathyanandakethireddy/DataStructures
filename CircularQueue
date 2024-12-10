@@ -1,0 +1,122 @@
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct queue
+{
+    int front;
+    int rear;
+    int *item;
+    int count;
+    int capacity;
+}Q;
+Q *create_queue(int size);
+void enqueue(Q *q,int value);
+void dequeue(Q *q);
+void print_fun(Q *q);
+void free_queue(Q *q);
+int is_full(Q*q);
+int is_empty(Q *q);
+int main()
+{
+    int size;
+    int option;
+    int value;
+    printf("Enter the size of Queue:");
+    scanf("%d",&size);
+    Q *q=create_queue(size);
+    while(1)
+    {
+        printf("\n1. Enqueue\n2. Dequeue\n3. print\n4. Exit\n");
+        scanf("%d",&option);
+        switch(option)
+        {
+            case 1:
+               printf("Enter the Value:");
+               scanf("%d",&value);
+               enqueue(q,value);
+               break;
+            case 2:
+               dequeue(q);
+               break;
+            case 3:
+               print_fun(q);
+               break;
+            case 4:
+               printf("Exiting . . .\n");
+               //free_queue(q);
+               exit(1);
+            default:
+            printf("Invalid option please try again.");
+        }
+
+    }
+}
+Q *create_queue(int size)
+{
+    Q *q=malloc(sizeof(Q));
+    if(q==NULL)
+    {
+        perror("Memory Allocation Failed:");
+        return NULL;
+    }
+    q->item=malloc(sizeof(int)*size);
+    if(q->item==NULL)
+    {
+        perror("Memory is not allocated for array item");
+        return NULL;
+    }
+    q->front=-1;
+    q->rear=-1;
+    q->capacity=size;
+    q->count=0;
+}
+void enqueue(Q *q,int value)
+{
+    if(is_full(q))
+    {
+        printf("Queue is full:");
+        return ;
+    }
+    if(q->rear==-1)
+    {
+        q->front=0;
+    }
+    q->rear=((q->rear+1)%q->capacity);
+    q->item[q->rear]=value;
+    q->count++;
+}
+void dequeue(Q *q)
+{
+    if(is_empty(q))
+    {
+        printf("Queue is Empty Cannot perform Dequeue operation:");
+        return ;
+    }
+    int value=q->item[q->front];
+    q->front=(q->front+1)%q->capacity;
+    q->count--;
+    printf("%d",value);
+}
+void print_fun(Q *q)
+{
+     if (q->count == 0) {
+        printf("Queue is empty.\n");
+        return;
+    }
+
+    printf("Queue values are:\n");
+    int index = q->front;
+    for (int i = 0; i < q->count; i++) {
+        printf("%d ", q->item[index]); // Use appropriate format specifier
+        index = (index + 1) % q->capacity; // Move to the next index circularly
+    }
+    printf("\n");
+}
+int is_full(Q*q)
+{
+    
+    return q->count==q->capacity?1:0;
+}
+int is_empty(Q *q)
+{
+    return q->count==0?1:0;
+}

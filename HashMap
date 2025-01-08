@@ -1,0 +1,243 @@
+#include<stdlib.h>
+#include<stdio.h>
+
+typedef struct node
+{
+    int index;
+    int value;
+    struct node *link;
+}Hash_t;
+Hash_t *creat_hashtable(int size);
+void insert(Hash_t *H,int data,int size);
+void Display(Hash_t *H,int size);
+int DeleteElement(Hash_t *H,int data,int size);
+int delete(Hash_t *H,int size);
+int search(Hash_t *H,int data,int size);
+int main()
+{
+    int size,data;
+    printf("Enter the size:");
+    scanf("%d",&size);
+    Hash_t *H=creat_hashtable(size);
+    while(1)
+    {
+      printf("\n1.Insert \n2.Search \n3.DeleteElement\n4.Display\n5.Delete HT\n6.exit\n");
+      int option;
+      scanf("%d",&option);
+      switch(option)
+      {
+        case 1:
+        //int data;
+        printf("Enter the Data to be inserted:");
+        scanf("%d",&data);
+        insert(H,data,size);
+        break;
+        case 2:
+        printf("Enter the Data:");
+        scanf("%d",&data);
+        if(search(H,data,size)==1)
+        {
+            printf("%d Found at index:%d",data,data%size);
+        }
+        else
+        {
+            printf("Data not found:");
+        }
+        break;
+        case 3:
+        printf("Enter the Data to Delete:");
+        scanf("%d",&data);
+        if(DeleteElement(H,data,size)==1)
+        {
+           printf("%d Data is Deleted Successfully",data);
+        }
+        else
+        {
+            printf("Data is not present To Delete");
+        }
+        break;
+        case 4:
+        Display(H,size);
+        break;
+        case 5:
+        if(delete(H,size)==1)
+        {
+            printf("Hash Table deleted Successfully:");
+        }
+        case 6:
+        printf("Existing . . . .");
+        exit(0);
+        default:
+        printf("Invalid option\n");
+      }
+    }
+}
+Hash_t *creat_hashtable(int size)
+{
+    Hash_t *H=malloc(sizeof(Hash_t)*size);
+    if(H==NULL)
+    {
+        perror("Memory allocation failed");
+        return NULL;
+    }
+    for(int i=0;i<size;i++)
+    {
+        H[i].index=i;
+        H[i].value=-1;
+        H[i].link=NULL;
+
+    }
+    return H;
+}
+void insert(Hash_t *H,int data,int size)
+{
+    int index=data%size;
+    if(H[index].value==-1)
+    {
+        H[index].value=data;
+    }
+    else
+    {
+        Hash_t *new=malloc(sizeof(Hash_t));
+        if(new==NULL)
+        {
+            perror("Memory is not allocated for node");
+            exit(1);
+        }
+        new->value=data;
+        new->link=NULL;
+        if(H[index].link==NULL)
+        {
+            H[index].link=new;
+        }
+        else
+        {
+            Hash_t *temp=H[index].link;
+            while(temp->link!=NULL)
+            {
+                temp=temp->link;
+            }
+            temp->link=new;
+        }
+    }
+}
+void Display(Hash_t *H,int size)
+{
+    for(int i=0;i<size;i++)
+    {
+        if(H[i].value!=-1)
+        {
+            //Hash_t *temp=H[i].link;
+            printf("Hash Table Elements are:\n");
+            if(H[i].link==NULL)
+            {
+                printf("Index:%d Value:%d\n",H[i].index,H[i].value);
+            }
+            else
+            {
+                printf("Index:%d Value:%d\n",H[i].index,H[i].value);
+                Hash_t *temp=H[i].link;
+                while(temp!=NULL)
+                {
+                    printf("Index:%d Value:%d\n",H[i].index,temp->value);
+                    temp=temp->link;
+                }
+            }
+        }
+    }
+}
+int DeleteElement(Hash_t *H,int data,int size)
+{
+    int index=data%size;
+    if(H[index].value!=-1)
+    {
+        if(H[index].link==NULL)
+        {
+            H[index].value=-1;
+        }
+        else
+        {
+            if(H[index].link!=NULL)
+            {
+                if(H[index].value==data)
+                {
+                    Hash_t *temp=H[index].link;
+                    H[index].value=temp->value;
+                    H[index].link=temp->link;
+                    free(temp);
+                    return 1;
+                }
+                Hash_t *temp=H[index].link;
+                if(temp->value==data)
+                {
+                    H[index].link=temp->link;
+                    free(temp);
+                    return 1;
+                }
+                else
+                {
+                   Hash_t *prev=NULL;
+                   Hash_t *next=NULL;
+                    while(temp->link!=NULL)
+                    {
+                        prev=temp;
+                        next=temp->link;
+                        if(next->value==data)
+                        {
+                          prev->link=next->link;
+                          free(next);
+                          return 1;
+                        }
+                        temp=next;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+int search(Hash_t *H,int data,int size)
+{
+    int index=data%size;
+    if(H[index].value==data)
+    {
+        return 1;
+    }
+    if(H[index].link!=NULL)
+    {
+        Hash_t *temp=H[index].link;
+        while(temp)
+        {
+            if(temp->value==data)
+            {
+                return 1;
+            }
+            temp=temp->link;
+           
+        }
+    }
+
+    return 0;
+}
+int delete(Hash_t *H,int size)
+{
+    for(int i=0;i<size;i++)
+    {
+        Hash_t *temp=NULL;
+        Hash_t *next=NULL;
+        if(H[i].value!=-1)
+        {
+            temp=H[i].link;
+            H[i].value=-1;
+            H[i].link=NULL;
+
+        }
+        while(temp)
+        {
+           next=temp->link;
+           free(temp);
+           temp=next;
+        }
+    }
+    return 1;
+}
